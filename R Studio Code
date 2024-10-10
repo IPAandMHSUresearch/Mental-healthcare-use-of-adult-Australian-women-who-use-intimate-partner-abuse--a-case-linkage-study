@@ -65,6 +65,9 @@
 #     7.4: Q14: Controlling for index age, how does prior FV victimisation predict combined MHSU?
 #     7.5: Q15: Controlling for index age and general crime victimisation, how does prior FV victimisation predict combined MHSU?  
 
+# 8:  Within Group Analysis - Presence and Severity of Historical FVI 
+#     8.1: Q16: What are the odds of acute MHSU based on presence and severity of historical FVIs? 
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
 ### 1) Packages ----------------------------------------------------------------
@@ -1057,3 +1060,20 @@ print(exp_upper)
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+
+8.1: Q16: What are the odds of acute MHSU based on presence and severity of historical FVIs? 
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+
+options(scipen = 999) 
+
+model_1_acute<-lrm(bin_acute_MHSU ~ index_age + prev_fvi_incid_chrg_iresp, data = sp_fems_IPAperps) 
+anova(model_1_acute, prev_fvi_incid_chrg_iresp="no hist fvi charges")
+exp(coef(model_1_acute))
+ggplot(pred, aes(x = prev_fvi_incid_chrg_iresp, y = yhat)) + 
+geom_line() + 
+geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
+labs(title = "Odds Acute Mental Health Service Use Based on Presence & Severity of Prior FVIs", 
+  x = "Previous Family Violence Incidents", 
+  y = "Predicted Probability of Acute MHSU") +
+theme_minimal()
