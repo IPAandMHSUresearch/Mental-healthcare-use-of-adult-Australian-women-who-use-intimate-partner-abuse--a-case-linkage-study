@@ -1067,13 +1067,21 @@ print(exp_upper)
 
 options(scipen = 999) 
 
+# Set data distribution ready for analysis 
+
+dd<-datadist(sp_fems_IPAperps) 
+options(datadist = "dd")
+
+# Relevel variable for prior FV use and charges 
+sp_fems_IPAperps$bin_acute_MHSU<-ifelse(sp_fems_IPAperps$MHSU_Acute_intensive_cat_total_lifetime>0, "Used MHS", "Did not use MHS" 
+sp_fems_IPAperps$bin_acute_MHSU<-ifelse(sp_fems_IPAperps$bin_acute_MHSU=="Used MHS",1,0)
+
+# Create model 
+
 model_1_acute<-lrm(bin_acute_MHSU ~ index_age + prev_fvi_incid_chrg_iresp, data = sp_fems_IPAperps) 
+
+summary(model_1_acute, prev_fvi_incid_chrg_iresp="no hist fvi charges")
 anova(model_1_acute, prev_fvi_incid_chrg_iresp="no hist fvi charges")
 exp(coef(model_1_acute))
-ggplot(pred, aes(x = prev_fvi_incid_chrg_iresp, y = yhat)) + 
-geom_line() + 
-geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
-labs(title = "Odds Acute Mental Health Service Use Based on Presence & Severity of Prior FVIs", 
-  x = "Previous Family Violence Incidents", 
-  y = "Predicted Probability of Acute MHSU") +
-theme_minimal()
+
+ggplot(Predict(model_1_acute, 'prev_fvi_incid_chrg_iresp', fun = plogis), adj.subtitle = F) + Xlab("History of FVI Charges") + ylab("Probability of Any Lifetime Acute MHSU") + theme_classic()
